@@ -3,13 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ジンルーム（こう様専用）</title>
+  <title>ジンルーム 密室入口</title>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    img {
+      width: 200px;
+      margin-bottom: 30px;
+    }
+    #passwordSection, #jinUI {
+      margin-top: 20px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+    }
+    #jinUI {
+      display: none;
+      margin-top: 40px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+    }
+  </style>
 </head>
-<body style="text-align: center; padding: 40px;">
-  <h1>ようこそ、こう様</h1>
-  <div style="margin-top: 30px;">
-    <img src="logo2.png.PNG" alt="王家の紋章" style="max-width: 300px;" />
+<body>
+
+  <img src="logo2.png.PNG" alt="王家の紋章">
+
+  <h1>ジンルーム 密室</h1>
+  <div id="passwordSection">
+    <p>合言葉を入力せよ</p>
+    <input type="password" id="passwordInput" placeholder="合言葉を入力">
+    <button onclick="checkPassword()">開く</button>
+    <p id="errorMessage" style="color: red; display: none;">合言葉が違う。</p>
   </div>
-  <p>ジンルームへようこそ。現在構築中です。</p>
+
+  <div id="jinUI">
+    <h2>妹ジン：ようこそ、こう様。</h2>
+    <p>命令をお待ちしています。</p>
+    <!-- 必要に応じてチャットUIや画像生成UIをここに追加 -->
+  </div>
+
+  <script>
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value;
+      if (input === "kou111") {
+        document.getElementById("passwordSection").style.display = "none";
+        document.getElementById("jinUI").style.display = "block";
+      } else {
+        document.getElementById("errorMessage").style.display = "block";
+      }
+    }
+  </script>
+
 </body>
 </html>
