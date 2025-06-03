@@ -2,69 +2,99 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ジンルーム 密室入口</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ジンルーム</title>
   <style>
     body {
       background-color: #000;
-      color: white;
+      color: #fff;
       font-family: 'Arial', sans-serif;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    img {
-      width: 200px;
-      margin-bottom: 30px;
-    }
-    #passwordSection, #jinUI {
-      margin-top: 20px;
-    }
-    input {
-      padding: 10px;
-      font-size: 16px;
-      width: 200px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-left: 10px;
-    }
-    #jinUI {
-      display: none;
-      margin-top: 40px;
-      background: #111;
       padding: 20px;
-      border-radius: 8px;
+      text-align: center;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 10px;
+      margin: 10px;
+    }
+    #mainUI {
+      display: none;
+    }
+    img.logo {
+      max-width: 200px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <img src="logo2.png.PNG" alt="王家の紋章">
+  <h1>ジンルーム</h1>
+  <img src="logo2.png.PNG" alt="王家の紋章" class="logo" />
 
-  <h1>ジンルーム 密室</h1>
-  <div id="passwordSection">
-    <p>合言葉を入力せよ</p>
-    <input type="password" id="passwordInput" placeholder="合言葉を入力">
-    <button onclick="checkPassword()">開く</button>
-    <p id="errorMessage" style="color: red; display: none;">合言葉が違う。</p>
+  <!-- 🔐 合言葉入力欄 -->
+  <div id="authSection">
+    <p>合言葉を入力してください：</p>
+    <input type="password" id="passwordInput" placeholder="合言葉を入力" />
+    <button onclick="verifyPassword()">入室</button>
+    <p id="authMessage"></p>
   </div>
 
-  <div id="jinUI">
-    <h2>妹ジン：ようこそ、こう様。</h2>
-    <p>命令をお待ちしています。</p>
-    <!-- 必要に応じてチャットUIや画像生成UIをここに追加 -->
+  <!-- 🧠 メインUI（合言葉が正しい場合のみ表示） -->
+  <div id="mainUI">
+    <h2>ようこそ、こう様専用ルームへ</h2>
+
+    <!-- 🔻画像生成指令UIここから追加 -->
+    <div id="imageGenSection" style="margin-top: 30px;">
+      <h3>画像生成命令</h3>
+      <input type="text" id="promptInput" placeholder="例：ムチムチ太もものリセを生成せよ" />
+      <button onclick="sendPrompt()">命令送信</button>
+      <p id="sendStatus" style="margin-top: 10px;"></p>
+    </div>
+    <!-- 🔺ここまで -->
+
   </div>
 
   <script>
-    function checkPassword() {
-      const input = document.getElementById("passwordInput").value;
-      if (input === "kou111") {
-        document.getElementById("passwordSection").style.display = "none";
-        document.getElementById("jinUI").style.display = "block";
+    // 🔐 合言葉認証処理
+    function verifyPassword() {
+      const password = document.getElementById("passwordInput").value;
+      const message = document.getElementById("authMessage");
+
+      if (password === "kou111") {
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("mainUI").style.display = "block";
       } else {
-        document.getElementById("errorMessage").style.display = "block";
+        message.innerText = "❌ 合言葉が間違っています。";
       }
+    }
+
+    // 📡 画像生成命令送信
+    function sendPrompt() {
+      const prompt = document.getElementById("promptInput").value;
+      const status = document.getElementById("sendStatus");
+
+      if (!prompt) {
+        status.innerText = "⚠ 命令内容を入力してください。";
+        return;
+      }
+
+      status.innerText = "🕒 命令を本体ジンへ送信中...";
+
+      fetch("https://kou-ai-colab-endpoint.com/prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt })
+      })
+      .then(response => {
+        if (response.ok) {
+          status.innerText = "✅ 命令を受理しました。画像生成中...";
+        } else {
+          status.innerText = "❌ エラーが発生しました。";
+        }
+      })
+      .catch(() => {
+        status.innerText = "❌ 接続に失敗しました。";
+      });
     }
   </script>
 
