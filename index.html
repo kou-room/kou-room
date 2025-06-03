@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ジンルーム 密室入口</title>
   <style>
     body {
@@ -16,44 +16,60 @@
       width: 200px;
       margin-bottom: 30px;
     }
+    #passwordSection, #jinUI {
+      margin-top: 20px;
+    }
     input, button {
       padding: 10px;
       font-size: 16px;
-      width: 250px;
-      margin: 5px 0;
+      width: 80%;
+      max-width: 300px;
+      margin: 5px auto;
+    }
+    button {
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 5px;
     }
     #jinUI {
       display: none;
-      margin-top: 40px;
-      background: #111;
+      background-color: #111;
       padding: 20px;
-      border-radius: 8px;
+      border-radius: 10px;
+      margin-top: 40px;
     }
-    .error {
+    #errorMessage {
       color: red;
       margin-top: 10px;
+    }
+    #resultImage {
+      margin-top: 20px;
+      max-width: 90%;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
 
-  <img src="logo2.png.PNG" alt="王家の紋章" />
+  <img src="logo2.png.PNG" alt="王家の紋章">
+
   <h1>ジンルーム 密室</h1>
 
   <div id="passwordSection">
     <p>合言葉を入力せよ</p>
-    <input type="password" id="passwordInput" placeholder="例：kou111" />
+    <input type="password" id="passwordInput" placeholder="合言葉">
     <button onclick="checkPassword()">開く</button>
-    <p id="errorMessage" class="error" style="display: none;">❌ 合言葉が違います。</p>
+    <p id="errorMessage"></p>
   </div>
 
   <div id="jinUI">
     <h2>ようこそ、こう様専用ルームへ</h2>
     <h3>画像生成命令</h3>
-    <input type="text" id="promptInput" placeholder="命令を入力せよ（例：リセのスーツ画像）" />
-    <button onclick="sendCommand()">命令送信</button>
-    <p id="resultMessage" class="error"></p>
-    <div id="resultImage"></div>
+    <input type="text" id="promptInput" placeholder="例：リセのムチムチ太もも">
+    <button onclick="sendPrompt()">命令送信</button>
+    <p id="statusMessage"></p>
+    <img id="resultImage" src="" alt="" style="display: none;">
   </div>
 
   <script>
@@ -63,39 +79,37 @@
         document.getElementById("passwordSection").style.display = "none";
         document.getElementById("jinUI").style.display = "block";
       } else {
-        document.getElementById("errorMessage").style.display = "block";
+        document.getElementById("errorMessage").textContent = "❌ 合言葉が違います。";
       }
     }
 
-    function sendCommand() {
+    function sendPrompt() {
       const prompt = document.getElementById("promptInput").value;
-      const resultMessage = document.getElementById("resultMessage");
+      const statusMessage = document.getElementById("statusMessage");
       const resultImage = document.getElementById("resultImage");
 
-      resultMessage.textContent = "";
-      resultImage.innerHTML = "";
+      statusMessage.textContent = "🔄 命令送信中...";
+      resultImage.style.display = "none";
 
-      fetch("https://YOUR_NGROK_URL_HERE.ngrok.io/generate", {  // ← 🔁ここをColabの実URLに
+      fetch("https://busy-rocks-wave.loca.lt/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ prompt })
       })
-      .then(res => res.json())
+      .then(response => response.json())
       .then(data => {
-        if (data.image_url) {
-          const img = document.createElement("img");
-          img.src = data.image_url;
-          img.alt = "生成画像";
-          img.style.maxWidth = "90%";
-          resultImage.appendChild(img);
+        if (data.status === "success") {
+          resultImage.src = data.image_url;
+          resultImage.style.display = "block";
+          statusMessage.textContent = "✅ 画像生成成功";
         } else {
-          resultMessage.textContent = "⚠️ 画像生成に失敗しました。";
+          statusMessage.textContent = "⚠️ 生成に失敗しました";
         }
       })
       .catch(() => {
-        resultMessage.textContent = "❌ 接続に失敗しました。";
+        statusMessage.textContent = "❌ 接続に失敗しました。";
       });
     }
   </script>
